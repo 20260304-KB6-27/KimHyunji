@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>등급 출력</title>
+  </head>
+  <body>
+    <div id="app">
+      잔고: <input v-model.number="balance" />
+      <br />
+
+      회원님의 등급:
+      <span v-if="balance >= 1000000">Gold</span>
+      <span v-else-if="balance >= 500000">Silver</span>
+      <span v-else-if="balance >= 200000">Bronze</span>
+      <span v-else>Basic</span>
+    </div>
+
+    <script src="https://unpkg.com/vue@3"></script>
+    <script>
+      let vm = Vue.createApp({
+        data() {
+          return { balance: 0 };
+        },
+      }).mount('#app');
+    </script>
+  </body>
+</html>

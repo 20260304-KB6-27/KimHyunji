@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue 3 연습용 Composition</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <input type="text" v-model="name" />
+      <br />
+      <div>입력한 값: {{name}}</div>
+    </div>
+
+    <script>
+      const { createApp, ref } = Vue;
+      // 반응형 데이터
+      const name = ref('');
+
+      createApp({
+        setup() {
+          return { name };
+        },
+      }).mount('#app');
+    </script>
+  </body>
+</html>

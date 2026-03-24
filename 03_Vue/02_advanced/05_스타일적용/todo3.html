@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue 3 연습용 Composition</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+      .completed {
+        background-color: #cfe3db;
+      }
+      .todo-text {
+        text-decoration: none;
+      }
+      .todo-text.done {
+        text-decoration: line-through;
+      }
+      li {
+        list-style: none;
+        margin-bottom: 6px;
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+      }
+      ul {
+        padding-left: 0;
+      }
+      .delete-btn {
+        margin-left: 10px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h1>:: ToDolist APP</h1>
+
+      <div>
+        <input
+          type="text"
+          v-model.trim="todo"
+          @keyup.enter.exact="addTodo"
+          @keyup.ctrl.enter.exact="addTodo"
+        />
+        <button @click="addTodo">추가</button>
+      </div>
+
+      <ul>
+        <li
+          v-for="todoitem in sortedTodoList"
+          :key="todoitem.id"
+          :class="{ completed: todoitem.completed }"
+        >
+          <input
+            type="checkbox"
+            :checked="todoitem.completed"
+            @change="toggleCompleted(todoitem.id)"
+          />
+
+          <span
+            :class="['todo-text', { done: todoitem.completed }]"
+          >
+            {{ todoitem.todo }} {{ todoitem.completed ? "(완료)" : "" }}
+          </span>
+
+          <button class="delete-btn" @click="deleteTodo(todoitem.id)">
+            삭제
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <script>
+      const { createApp, ref, computed } = Vue;
+
+      let ts = new Date().getTime();
+
+      createApp({
+        setup() {
+          const todo = ref('');
+
+          const todolist = ref([
+            { id: ts, todo: '자전거 타기', completed: false },
+            { id: ts + 1, todo: '딸과 공원 산책', completed: false },
+            { id: ts + 2, todo: '일요일 애견 카페', completed: false },
+            { id: ts + 3, todo: 'Vue 원고 집필', completed: false },
+          ]);
+
+          const sortedTodoList = computed(() => {
+            return [...todolist.value].sort((a, b) => {
+              // 기준 1: 미완료 먼저, 완료는 뒤
+              if (a.completed !== b.completed) {
+                return a.completed - b.completed;
+              }
+
+              // 기준 2: 같은 상태면 todo 문자열 순
+              return a.todo.localeCompare(b.todo, 'ko');
+            });
+          });
+
+          const deleteTodo = (id) => {
+            const index = todolist.value.findIndex((item) => item.id === id);
+            if (index !== -1) {
+              todolist.value.splice(index, 1);
+            }
+          };
+
+          const toggleCompleted = (id) => {
+            const index = todolist.value.findIndex((item) => item.id === id);
+            if (index !== -1) {
+              todolist.value[index].completed = !todolist.value[index].completed;
+            }
+          };
+
+          const addTodo = (e) => {
+            if (todo.value === '') return;
+
+            todolist.value.push({
+              id: new Date().getTime(),
+              todo: todo.value,
+              completed: e && e.ctrlKey ? true : false,
+            });
+
+            todo.value = '';
+          };
+
+          return {
+            todo,
+            todolist,
+            sortedTodoList,
+            addTodo,
+            deleteTodo,
+            toggleCompleted,
+          };
+        },
+      }).mount('#app');
+    </script>
+  </body>
+</html>
